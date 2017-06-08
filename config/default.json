@@ -1,0 +1,9 @@
+{
+	"name": "GameOfLifeServer",
+	"size": 12,
+	"interval": 1000,
+	"server": {
+		"port": 3002,
+		"host": "localhost"
+	}
+}

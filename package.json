@@ -1,0 +1,30 @@
+{
+  "name": "game-of-life",
+  "version": "1.0.0",
+  "description": "Game Of Life",
+  "main": "index.js",
+  "scripts": {
+    "test": "NODE_PATH=. ./node_modules/mocha/bin/mocha -c test/**/*.js",
+    "start": "NODE_PATH=. NODE_ENV=production node index.js"
+  },
+  "author": "Tamil Vendhan K",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^3.4.1",
+    "should": "^11.2.1"
+  },
+  "dependencies": {
+    "jsondiffpatch": "^0.2.4",
+    "average-color": "^1.0.0",
+    "config": "^1.26.1",
+    "is-color": "^0.2.0",
+    "pino": "^4.5.2",
+    "randomcolor": "^0.5.2",
+    "socket.io": "^2.0.1",
+    "socket.io-client": "^2.0.1",
+    "ws": "^3.0.0"
+  },
+  "engines": {
+    "node": "8.0.0"
+  }
+}
