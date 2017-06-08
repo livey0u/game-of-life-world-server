@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "NODE_PATH=. ./node_modules/mocha/bin/mocha -c test/**/*.js",
-    "start": "NODE_PATH=. NODE_ENV=production node index.js"
+    "start": "NODE_PATH=. node index.js"
   },
   "author": "Tamil Vendhan K",
   "license": "MIT",

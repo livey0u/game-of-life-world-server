@@ -14,17 +14,22 @@ const world = new World(config);
 const io = SocketIO(server);
 const worldServerConfig = {port: process.env.PORT || config.server.port, host: config.server.host};
 
-
 io.on('connection', function onConnection(client) {
 
   logger.info('Relay Client Connected');
 
   client.on(constants.NEW_CLIENT, function onClient(data, callback) {
-  	callback(null, {event: constants.NEW_CLIENT + '_RESPONSE', success: true, data: {layout: world.layout, color: util.ipToColor(data.address), username: data.address}});
+    
+    logger.info('Web Client Connected', data);
+
+    let newClientResponse = {event: constants.NEW_CLIENT + '_RESPONSE', success: true, data: {layout: world.layout, color: util.ipToColor(data.address), username: data.address}};
+  	
+    callback(null, newClientResponse);
+
   });
 
   client.on(constants.UPDATE_CELLS, function onCellUpdate(data, callback) {
-  	
+
   	try {
   		world.setCells(data);
   	}
@@ -58,5 +63,5 @@ server.listen(worldServerConfig.port, worldServerConfig.host, function onListen(
 		return logger.error(error);
 	}
   world.begin();
-	logger.info(`Game Of Life Server running on port ${worldServerConfig.port}`);
+	logger.info(`Game Of Life Server running on port ws://${worldServerConfig.host}:${worldServerConfig.port}`);
 });
