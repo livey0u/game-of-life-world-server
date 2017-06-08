@@ -53,7 +53,7 @@ function broadcast(event, data) {
 	io.sockets.send({event: event, data: data, success: true});
 }
 
-server.listen(worldServerConfig.port, worldServerConfig.host, function fn(error) {
+server.listen(worldServerConfig.port, worldServerConfig.host, function onListen(error) {
 	if(error) {
 		return logger.error(error);
 	}
