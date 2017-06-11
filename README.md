@@ -55,6 +55,16 @@ So, game logic code is seperated & kept in seperate server. Clients connects to 
 1. Client origianted events sent to relay servers & relayed to game server.
 2. Game server originated events sent to relay servers & broadcasted to all connected clients.
 
+## Functionalities
+
+1. Color generation is based on ip address & user can change it.
+2. Only changed cells are sent to clients. Remaining part can be created by clients, even at the start of client app.
+3. Backup of layout data is done on process exit & loaded on process startup. So, the game state is preserved across server restarts.
+4. If board size changed during restarts, preserved game state is applied only if new size is same or higher than previous size.
+
+## Todo
+
+
 
 
 
