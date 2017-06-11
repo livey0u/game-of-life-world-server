@@ -1,5 +1,5 @@
 {
-	"size": 25,
+	"size": 30,
 	"interval": 1000,
 	"server": {
 		"port": 3000,
