@@ -2,6 +2,7 @@
 	"name": "GameOfLifeServer",
 	"size": 12,
 	"interval": 1000,
+	"layoutKey": "GAME_OF_LIFE:WORLD:LAYOUT",
 	"server": {
 		"port": 3002,
 		"host": "localhost"

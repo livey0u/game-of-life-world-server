@@ -1,8 +1,11 @@
 'use strict';
 
 const should = require('should');
+
+const config = require('config');
 const World = require('lib/world');
 const constants = require('lib/constants');
+
 
 describe('World unit tests', function fn() {
 
@@ -10,7 +13,6 @@ describe('World unit tests', function fn() {
 		
 		it('Should create world object for given configuration', function fn() {
 			
-			let config = {size: 3, interval: 100};
 			let world = new World(config);
 
 			should.exist(world);
@@ -23,13 +25,157 @@ describe('World unit tests', function fn() {
 
 	});
 
-	describe('#setup', function fn() {
+	describe('#start', function fn() {
 
-		let config = {size: 3, interval: 100};
 		let world;
 
-		before(function fn() {
+		before(function fn(done) {
 			world = new World(config);
+			done();
+		});
+
+		after(function fn(done) {
+			world.removeLayout(done);
+		});
+		
+		it(`Should emit ${constants.WORLD_STARTED_EVENT} once application is started successfully`, function fn(done) {
+
+			world.on(constants.WORLD_STARTED_EVENT, done);
+			world.start();
+
+		});
+
+	});
+
+	describe('#stop', function fn() {
+
+		let world;
+
+		before(function fn(done) {
+			world = new World(config);
+			done();
+		});
+
+		after(function fn(done) {
+			world.removeLayout(done);
+		});
+		
+		it(`Should save layout & exit`, function fn(done) {
+
+			world.stop(function f(error) {
+				should.not.exist(error);
+				done();
+			});
+
+		});
+
+	});
+
+
+
+	describe('#saveLayout', function fn() {
+
+		let world;
+
+		before(function fn(done) {
+			world = new World(config);
+			world.on(constants.WORLD_STARTED_EVENT, done);
+			world.start();
+		});
+
+		after(function fn(done) {
+			world.removeLayout(done);
+		});
+		
+		it(`Should save layout`, function fn(done) {
+			world.saveLayout(world.layout, function f(error) {
+				should.not.exist(error);
+				world.loadLayout(function f(error, layout) {
+					should.not.exist(error);
+					should.exist(layout);
+					should.equal(JSON.stringify(layout), JSON.stringify(world.layout));
+					done();
+				});
+			});
+		});
+
+	});
+
+	describe('#loadLayout', function fn() {
+
+		let world;
+
+		before(function fn(done) {
+			world = new World(config);
+			world.on(constants.WORLD_STARTED_EVENT, done);
+			world.start();
+		});
+
+		after(function fn(done) {
+			world.removeLayout(done);
+		});
+		
+		it(`Should load layout`, function fn(done) {
+			world.loadLayout(function f(error, layout) {
+				should.not.exist(error);
+				should.exist(layout);
+				should.equal(JSON.stringify(layout), JSON.stringify(world.layout));
+				done();
+			});
+		});
+
+		it(`Should return null if layout does not exist`, function fn(done) {
+			world.removeLayout(function f(error) {
+				should.not.exist(error);
+				world.loadLayout(function f(error, layout) {
+					should.not.exist(error);
+					should.equal(layout, null);
+					done();
+				});
+			});
+		});
+
+	});
+
+	describe('#loadLayout', function fn() {
+
+		let world;
+
+		before(function fn(done) {
+			world = new World(config);
+			world.on(constants.WORLD_STARTED_EVENT, done);
+			world.start();
+		});
+
+		after(function fn(done) {
+			world.removeLayout(done);
+		});
+
+		it(`Should remove layout`, function fn(done) {
+			world.removeLayout(function f(error) {
+				should.not.exist(error);
+				world.loadLayout(function f(error, layout) {
+					should.not.exist(error);
+					should.equal(layout, null);
+					done();
+				});
+			});
+		});
+
+	});
+
+	describe('#setup', function fn() {
+
+		let world;
+
+		before(function fn(done) {
+			world = new World(config);
+			world.on(constants.WORLD_STARTED_EVENT, done);
+			world.start();
+		});
+
+		after(function fn(done) {
+			world.removeLayout(done);
 		});
 		
 		it('Should setup layout based on configured size', function fn() {
@@ -43,15 +189,76 @@ describe('World unit tests', function fn() {
 
 		});
 
+		it('Should setup layout & set alive cells from input layout if layout size is same as current layout', function fn() {
+
+			let layout = JSON.parse(JSON.stringify(world.layout));
+			layout[0][0].state = 1;
+
+			world.setup(layout);
+
+			should.exist(world.layout);
+			should.equal(world.layout.length, config.size);
+			should.exist(world.layout[0].length);
+			should.equal(world.layout[0].length, config.size);
+
+			should.exist(world.layout[0][0]);
+			should.exist(world.layout[0][0].state);
+			should.equal(world.layout[0][0].state, 1);
+
+		});
+
+		it('Should setup layout & set alive cells from input layout if layout size is less than current layout', function fn() {
+
+			let layout = JSON.parse(JSON.stringify(world.layout));
+			layout[0][0].state = 1;
+			layout.pop(); // simulating decrease in size.
+
+			world.setup(layout);
+
+			should.exist(world.layout);
+			should.equal(world.layout.length, config.size);
+			should.exist(world.layout[0].length);
+			should.equal(world.layout[0].length, config.size);
+
+			should.exist(world.layout[0][0]);
+			should.exist(world.layout[0][0].state);
+			should.equal(world.layout[0][0].state, 1);
+
+		});
+
+		it('Should setup layout & not set alive cells from input layout if layout size is higher than current', function fn() {
+
+			let layout = JSON.parse(JSON.stringify(world.layout));
+			layout[0][0].state = 1;
+			layout.push([]); // simulating increased size without actual data for test.
+
+			world.setup(layout);
+
+			should.exist(world.layout);
+			should.equal(world.layout.length, config.size);
+			should.exist(world.layout[0].length);
+			should.equal(world.layout[0].length, config.size);
+
+			should.exist(world.layout[0][0]);
+			should.exist(world.layout[0][0].state);
+			should.equal(world.layout[0][0].state, 0);
+
+		});
+
 	});
 
 	describe('#getSurroundingCells', function fn() {
 
-		let config = {size: 3, interval: 100};
 		let world;
 
-		before(function fn() {
+		before(function fn(done) {
 			world = new World(config);
+			world.on(constants.WORLD_STARTED_EVENT, done);
+			world.start();
+		});
+
+		after(function fn(done) {
+			world.removeLayout(done);
 		});
 		
 		it('Should return 8 surrounding cells for a middle cell', function fn() {
@@ -111,12 +318,17 @@ describe('World unit tests', function fn() {
 
 	describe('#setCells', function fn() {
 
-		let config = {size: 3, interval: 100};
 		let world;
 		let data = {};
 
-		before(function fn() {
+		before(function fn(done) {
 			world = new World(config);
+			world.on(constants.WORLD_STARTED_EVENT, done);
+			world.start();
+		});
+
+		after(function fn(done) {
+			world.removeLayout(done);
 		});
 		
 		it('Should throw INVALID_DATA error for invalid parameter', function fn() {
@@ -150,12 +362,17 @@ describe('World unit tests', function fn() {
 
 	describe('#setCell', function fn() {
 
-		let config = {size: 3, interval: 100};
 		let world;
 		let data = {};
 
-		before(function fn() {
+		before(function fn(done) {
 			world = new World(config);
+			world.on(constants.WORLD_STARTED_EVENT, done);
+			world.start();
+		});
+
+		after(function fn(done) {
+			world.removeLayout(done);
 		});
 
 		it('Should throw INVALID_CELL error for invalid parameter', function fn() {
@@ -208,11 +425,16 @@ describe('World unit tests', function fn() {
 
 	describe('#getLiveNeighbours', function fn() {
 
-		let config = {size: 3, interval: 100};
 		let world;
 
-		before(function fn() {
+		before(function fn(done) {
 			world = new World(config);
+			world.on(constants.WORLD_STARTED_EVENT, done);
+			world.start();
+		});
+
+		after(function fn(done) {
+			world.removeLayout(done);
 		});
 		
 		it('Should return 0 live neighbours when there are no live neighbours around the given cell', function fn() {
@@ -254,17 +476,16 @@ describe('World unit tests', function fn() {
 
 	describe('#evolveCell', function fn() {
 
-		let config = {size: 3, interval: 100};
-		let world = new World(config);
+		let world;
 
-		before(function fn(done) {
-			world.setup();
-			done();
+		beforeEach(function fn(done) {
+			world = new World(config);
+			world.on(constants.WORLD_STARTED_EVENT, done);
+			world.start();
 		});
 
 		afterEach(function fn(done) {
-			world.setup();
-			done();
+			world.removeLayout(done);
 		});
 		
 		it('Should evolve to dead cell, if a cell has fewer than two live neighbours.', function fn() {
@@ -344,13 +565,16 @@ describe('World unit tests', function fn() {
 
 	describe('#evolve', function fn() {
 
-		let config = {size: 3, interval: 100};
 		let world;
-		let lastEvolvedAt;
 
-		before(function fn() {
+		before(function fn(done) {
 			world = new World(config);
-			lastEvolvedAt = world.evolvedAt = Date.now();
+			world.on(constants.WORLD_STARTED_EVENT, done);
+			world.start();
+		});
+
+		after(function fn(done) {
+			world.removeLayout(done);
 		});
 
 		it('Should evolve world to next generation.', function fn() {

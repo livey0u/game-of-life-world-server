@@ -4,7 +4,7 @@
   "description": "Game Of Life",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_PATH=. ./node_modules/mocha/bin/mocha -c test/**/*.js",
+    "test": "NODE_ENV=test NODE_PATH=. ./node_modules/mocha/bin/mocha -c test/**/*.js",
     "start": "NODE_PATH=. node index.js"
   },
   "author": "Tamil Vendhan K",

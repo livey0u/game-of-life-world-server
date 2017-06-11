@@ -55,11 +55,6 @@ So, game logic code is seperated & kept in seperate server. Clients connects to 
 1. Client origianted events sent to relay servers & relayed to game server.
 2. Game server originated events sent to relay servers & broadcasted to all connected clients.
 
-## Todo
-
-1. Persistence is not done. Wanted to do filesystem based persistence & reload of app startup.
-2. 
-
 
 
 
