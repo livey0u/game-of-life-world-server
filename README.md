@@ -17,6 +17,23 @@ A small module that mutates cells based on following rules & requirements.
 
 ```
 
+## Local setup
+
+1. `git clone https://github.com/livey0u/game-of-life-world-server.git`
+2. `cd game-of-life-world-server`
+3. `npm install`
+
+## Start
+
+Development:
+
+	1. `NODE_ENV=development PORT=5000 NODE_PATH=. node index.js`
+
+
+Production:
+
+	1. `npm start`
+
 ## Architecture
 
 Project consists of 2 servers. 
@@ -33,24 +50,16 @@ If both game logic & client handling kept in same server instance, we would have
 
 So, game logic code is seperated & kept in seperate server. Clients connects to relay servers. Each relay server keeps one websocket connection with game server. This connection from relay server will add up usage of CPU & RAM in game server. But when compared to number of clients connections to relay server and the number of realy servers connections to game server, game server would handle very less number of connections. 
 
-### Events flow
+## Events flow
 
 1. Client origianted events sent to relay servers & relayed to game server.
 2. Game server originated events sent to relay servers & broadcasted to all connected clients.
 
-## Local setup
+## Todo
 
-1. `git clone https://github.com/livey0u/game-of-life.git`
-2. `cd game-of-life`
-3. `npm install`
+1. Persistence is not done. Wanted to do filesystem based persistence & reload of app startup.
+2. 
 
-### Start world server
-
-1. `NODE_ENV=development NODE_PATH=. node lib/server.js`
-
-### Start relay server
-
-1. `NODE_ENV=development NODE_PATH=. node index.js`
 
 
 
