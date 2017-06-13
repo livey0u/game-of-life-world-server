@@ -21,6 +21,7 @@ A small module that mutates cells based on following rules & requirements.
 	1. git clone https://github.com/livey0u/game-of-life-world-server.git
 	2. cd game-of-life-world-server
 	3. npm install
+	4. npm test
 
 ## Start
 
